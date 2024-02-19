@@ -1,8 +1,13 @@
 package org.ohgiraffers.board.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.ohgiraffers.board.domain.dto.CreatePostRequest;
+import org.ohgiraffers.board.domain.dto.CreatePostResponse;
+import org.ohgiraffers.board.domain.dto.ReadPostResponse;
+import org.ohgiraffers.board.service.PostService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /** 레이어드 아키텍쳐
  * 소프트웨어를 여러개의 계층으로 분리해서 설계하는 방법
@@ -27,4 +32,23 @@ import org.springframework.web.bind.annotation.RestController;
 // @RequiredArgsConstructor : final 혹은 @NotNull 어노테이션으 붙은 필드에 대한 생성자를 자동으로 생성해준다.
 @RequiredArgsConstructor
 public class PostController {
+
+    private final PostService postService;
+
+    @PostMapping
+    public ResponseEntity<CreatePostResponse> postCreate(@RequestBody CreatePostRequest request) {
+
+        CreatePostResponse response = postService.createPost(request);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<ReadPostResponse> postRead(@PathVariable Long postId) {
+
+        ReadPostResponse response = postService.readPostById(postId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
