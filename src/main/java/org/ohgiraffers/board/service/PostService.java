@@ -2,11 +2,11 @@ package org.ohgiraffers.board.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.ohgiraffers.board.domain.dto.CreatePostRequest;
-import org.ohgiraffers.board.domain.dto.CreatePostResponse;
-import org.ohgiraffers.board.domain.dto.ReadPostResponse;
+import org.ohgiraffers.board.domain.dto.*;
 import org.ohgiraffers.board.domain.entity.Post;
 import org.ohgiraffers.board.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,13 +42,53 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         return new CreatePostResponse(savedPost.getPostId(), savedPost.getTitle(), savedPost.getContent());
+
     }
 
     public ReadPostResponse readPostById(Long postId) {
+
         Post foundPost = postRepository.findById(postId) // postId가 진짜 있을지 없을지 모른다. 따라서 예외처리 생성
                 .orElseThrow(() -> new EntityNotFoundException("해당 postId로 조회된 게시글이 없습니다."));
 
         return new ReadPostResponse(foundPost.getPostId(), foundPost.getTitle(), foundPost.getContent());
+
+    }
+
+    @Transactional
+    public UpdatePostResponse updatePost(Long postId, UpdatePostRequest request) {
+
+        Post foundPost = postRepository.findById(postId) // postId가 진짜 있을지 없을지 모른다. 따라서 예외처리 생성
+                .orElseThrow(() -> new EntityNotFoundException("해당 postId로 조회된 게시글이 없습니다."));
+
+        // Dirty Checking
+        //
+        foundPost.update(request.getTitle(), request.getContent());
+
+        return new UpdatePostResponse(foundPost.getPostId(), foundPost.getTitle(), foundPost.getContent());
+
+    }
+
+    @Transactional
+    public DeletePostResponse deletePost(Long postId) {
+
+        Post foundpost = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 postId로 조회된 게시글이 없습니다."));
+
+        postRepository.delete(foundpost);
+
+        return new DeletePostResponse(foundpost.getPostId());
+
+    }
+
+    public Page<ReadPostResponse> readAllPost(Pageable pageable) {
+
+        Page<Post> postPage = postRepository.findAll(pageable);
+
+        return postPage.map(post -> new ReadPostResponse(
+                post.getPostId(),
+                post.getTitle(),
+                post.getContent()
+        ));
     }
 }
 
