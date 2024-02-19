@@ -1,5 +1,7 @@
 package org.ohgiraffers.board.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.ohgiraffers.board.domain.dto.*;
 import org.ohgiraffers.board.service.PostService;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
  *  REST는 기본적으로 웹의 기존 HTTP 프로토콜을 그대로 사용하기 때문에, 웹의 장점을 최대한 활용 할 수 있는 아키텍쳐 스타일이다.
  */
 
+@Tag(name = "posts", description = "게시글 API")
 @RestController
 // @RequestMapping : 특정 URL을 매핑하게 도와준다.
 @RequestMapping("/api/v1/posts")
@@ -39,6 +42,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
+    @Operation(summary = "게시글 작성", description = "제목(title), 내용(content) 입력해주세요")
     public ResponseEntity<CreatePostResponse> postCreate(@RequestBody CreatePostRequest request) {
 
         CreatePostResponse response = postService.createPost(request);
