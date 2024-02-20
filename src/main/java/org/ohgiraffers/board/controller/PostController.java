@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 // @RequestMapping : 특정 URL을 매핑하게 도와준다.
 @RequestMapping("/api/v1/posts")
-// @RequiredArgsConstructor : final 혹은 @NotNull 어노테이션으 붙은 필드에 대한 생성자를 자동으로 생성해준다.
+// @RequiredArgsConstructor : final 혹은 @NotNull 어노테이션이 붙은 필드에 대한 생성자를 자동으로 생성해준다.
 @RequiredArgsConstructor
 public class PostController {
 
@@ -51,6 +51,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
+    @Operation(summary = "게시글 단일 조회", description = "postId로 게시글 단일 조회")
     public ResponseEntity<ReadPostResponse> postRead(@PathVariable Long postId) {
 
         ReadPostResponse response = postService.readPostById(postId);
@@ -60,6 +61,7 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
+    @Operation(summary = "게시글 수정", description = "postId와 request로 게시글 수정")
     public ResponseEntity<UpdatePostResponse> postUpdate(@PathVariable Long postId, @RequestBody UpdatePostRequest request){
 
         UpdatePostResponse response = postService.updatePost(postId, request);
@@ -69,6 +71,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
+    @Operation(summary = "게시글 삭제", description = "postId로 게시글 삭제")
     public ResponseEntity<DeletePostResponse> postDelete(@PathVariable Long postId) {
 
         DeletePostResponse response = postService.deletePost(postId);
@@ -78,6 +81,7 @@ public class PostController {
     }
 
     @GetMapping
+    @Operation(summary = "게시글 전체 조회", description = "postId로 게시글 전체 조회")
     public ResponseEntity<Page<ReadPostResponse>> postReadAll(
             @PageableDefault(size = 5, sort = "postId", direction = Sort.Direction.DESC) Pageable pageable) {
             //@PageableDefault : 안에 필요한 사이즈나 설정들을 정할 수 있는 어노테이션
